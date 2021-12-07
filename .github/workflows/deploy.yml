@@ -1,0 +1,78 @@
+
+
+name: Deploy ReactJS Website to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: build and deploy site
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+
+    - name: checkout repo
+      uses: actions/checkout@v1
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        aws-region: us-east-2
+
+    - uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+      working-directory: ./terraform
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+      working-directory: ./terraform
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      working-directory: ./terraform
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color
+      continue-on-error: true
+      working-directory: ./terraform
+      
+    - name: terraform apply
+      run: terraform apply
+      working-directory: ./terraform
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    
+    - name: Install NPM packages
+      run: npm ci
+      working-directory: ./app
+    
+    - name: Build project
+      run: npm run build
+      working-directory: ./app
+    
+    - name: Run tests
+      run: npm run test
+      working-directory: ./app
+
+    - name: Sync S3 with the build files  
+      run: |
+          aws s3 cp app/build s3://react-s3-ga-bucket-sh --recursive --exclude index.html --acl="public-read" --cache-control max-age=31536000,public
+          aws s3 cp app/build/index.html s3://react-s3-ga-bucket-sh/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read
+ 
+    
