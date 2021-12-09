@@ -7,10 +7,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket  = "terraform-app-state-shrey"
-    key     = "react-s3-app/terraform.tfstate"
-    region  = "us-east-2"
-    encrypt = true
+    bucket         = "terraform-app-state-shrey"
+    key            = "react-s3-app/terraform.tfstate"
+    region         = "us-east-2"
+    encrypt        = true
+    dynamodb_table = "terraform-state-locking-table"
   }
 }
 
@@ -35,6 +36,17 @@ resource "aws_s3_bucket" "shrey-terraform-state" {
         sse_algorithm = "AES256"
       }
     }
+  }
+}
+
+resource "aws_dynamodb_table" "terraform_locks" {
+  name         = "terraform-state-locking-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
   }
 }
 
