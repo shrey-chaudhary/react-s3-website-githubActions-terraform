@@ -20,7 +20,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "shrey-terraform-state" {
-  bucket = "terraform-app-state-shrey"
+  bucket        = "terraform-app-state-shrey"
   force_destroy = true
   lifecycle {
     prevent_destroy = true
@@ -52,6 +52,15 @@ resource "aws_dynamodb_table" "terraform_locks" {
 
 resource "aws_s3_bucket" "react-s3-bucket" {
   bucket = "react-s3-ga-bucket-sh"
+  acl    = "public-read"
+  website {
+    index_document = "index.html"
+    error_document = "index.html"
+  }
+}
+
+resource "aws_s3_bucket" "react-s3-bucket-test" {
+  bucket = "react-s3-ga-bucket-sh-test"
   acl    = "public-read"
   website {
     index_document = "index.html"
