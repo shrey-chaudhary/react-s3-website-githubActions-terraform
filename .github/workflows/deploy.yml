@@ -3,6 +3,7 @@
 name: Deploy ReactJS Website to S3
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -28,18 +29,18 @@ jobs:
 
     - uses: hashicorp/setup-terraform@v1
 
-    - name: Terraform fmt
+    - name: terraform format
       id: fmt
       run: terraform fmt -check
       continue-on-error: true
       working-directory: ./terraform
 
-    - name: Terraform Init
+    - name: terraform init
       id: init
       run: terraform init
       working-directory: ./terraform
 
-    - name: Terraform Validate
+    - name: terraform validate
       id: validate
       run: terraform validate -no-color
       working-directory: ./terraform
