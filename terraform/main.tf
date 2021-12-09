@@ -59,11 +59,3 @@ resource "aws_s3_bucket" "react-s3-bucket" {
   }
 }
 
-resource "aws_s3_bucket" "react-s3-bucket-test" {
-  bucket = "react-s3-ga-bucket-sh-test"
-  acl    = "public-read"
-  website {
-    index_document = "index.html"
-    error_document = "index.html"
-  }
-}
