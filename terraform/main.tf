@@ -21,7 +21,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "shrey-terraform-state" {
   bucket = "terraform-app-state-shrey"
-
+  force_destroy = true
   lifecycle {
     prevent_destroy = true
   }
