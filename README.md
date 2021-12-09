@@ -6,5 +6,4 @@ Before runnng the terrafom main.tf file for the first time, comment the backend 
 Also you will need to add following to the secrets:  
   
 AWS_ACCESS_KEY_ID<br />
-AWS_ROLE_TO_ASSUME<br />
 AWS_SECRET_ACCESS_KEY<br />
